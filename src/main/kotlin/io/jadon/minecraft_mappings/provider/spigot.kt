@@ -1,15 +1,12 @@
-package provider
+package io.jadon.minecraft_mappings.provider
 
 import com.google.common.collect.ImmutableBiMap
 import com.google.common.collect.ImmutableList
-import com.google.common.collect.ImmutableMap
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
-import com.google.gson.stream.JsonReader
-import com.google.gson.stream.JsonWriter
 import com.opencsv.CSVReader
 import net.techcable.srglib.FieldData
 import net.techcable.srglib.JavaType
@@ -130,12 +127,20 @@ fun downloadSpigotMappings(buildDataCommit: String): Mappings {
         cacheDir.mkdirs()
         val info = URL("$baseUrl/info.json?at=$buildDataCommit&raw").loadJson().asJsonObject
         val classMappingsLocation = info.get("classMappings").asString
-        val memberMappingsLocation = info.get("memberMappings").asString
+        val memberMappings = info.get("memberMappings")
+        if (memberMappings != null) {
+            val memberMappingsLocation = memberMappings.asString
+            if (!memberMappingsFile.exists()) {
+                URL("$baseUrl/mappings/$memberMappingsLocation/?at=$buildDataCommit&raw").downloadTo(memberMappingsFile)
+            }
+        } else {
+            if (!memberMappingsFile.exists()) {
+                // TODO: Make this better
+                URL("https://maven.elmakers.com/repository/org/spigotmc/minecraft-server/" + info.get("spigotVersion").asString + "/minecraft-server-" + info.get("spigotVersion").asString + "-maps-spigot-members.csrg").downloadTo(memberMappingsFile)
+            }
+        }
         if (!classMappingsFile.exists()) {
             URL("$baseUrl/mappings/$classMappingsLocation/?at=$buildDataCommit&raw").downloadTo(classMappingsFile)
-        }
-        if (!memberMappingsFile.exists()) {
-            URL("$baseUrl/mappings/$memberMappingsLocation/?at=$buildDataCommit&raw").downloadTo(memberMappingsFile)
         }
     }
     val classMappings = MappingsFormat.COMPACT_SEARGE_FORMAT.parseLines(stripBrokenLines(classMappingsFile.readLines()))

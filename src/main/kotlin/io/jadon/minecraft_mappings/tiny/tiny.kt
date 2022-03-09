@@ -1,4 +1,4 @@
-package tiny
+package io.jadon.minecraft_mappings.tiny
 
 import com.google.common.collect.ImmutableBiMap
 import net.techcable.srglib.FieldData
@@ -9,7 +9,7 @@ import net.techcable.srglib.mappings.ImmutableMappings
 import net.techcable.srglib.mappings.Mappings
 
 /**
- * Merge multiple srglib.Mappings into one tiny.Mappings
+ * Merge multiple srglib.Mappings into one io.jadon.minecraft_mappings.tiny.Mappings
  */
 
 class Mappings(

@@ -1,51 +1,23 @@
+package io.jadon.minecraft_mappings
+
 import com.google.common.collect.ImmutableList
 import com.google.common.collect.MultimapBuilder
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import io.jadon.minecraft_mappings.provider.*
 import net.techcable.srglib.FieldData
 import net.techcable.srglib.JavaType
 import net.techcable.srglib.MethodData
 import net.techcable.srglib.format.MappingsFormat
 import net.techcable.srglib.mappings.Mappings
-import provider.*
 import java.io.File
 
-enum class MinecraftVersion(
-    val mcVersion: String,
-    val mcpVersion: String? = null,
-    val mcpConfig: Boolean = false,
-    val spigot: Boolean = false
-) {
-    V1_17("1.17.1", "snapshot_20210706", true, true),
-    V1_16_5("1.16.5", "snapshot_20210115", true, true),
-    V1_16_4("1.16.4", "snapshot_20201102", true, true),
-    V1_16_3("1.16.3", "snapshot_20201025", true, true),
-    V1_16_3_YARN("1.16.3", null, false, true),
-    V1_16_2("1.16.2", "snapshot_20200812", true, true),
-    V1_16_2_YARN("1.16.2", null, false, true),
-    V1_16_1_YARN("1.16.1", null, false, true),
-    V1_16_1("1.16.1", "snapshot_20200625", false, true),
-    V1_15_2("1.15.2", "snapshot_20200515", true, true),
-    V1_15_1("1.15.1", "snapshot_20191217", true, true),
-    V1_15("1.15", "snapshot_nodoc_20191212", true, true),
-    V1_14_4("1.14.4", "snapshot_nodoc_20190719", true, true),
-    V1_14_3("1.14.3", "snapshot_nodoc_20190719", true, true),
-    V1_14_2("1.14.2", "stable_nodoc_53", false, true),
-    V1_14_1("1.14.1", "stable_nodoc_51", false, true),
-    V1_14("1.14", "stable_nodoc_49", false, true),
-    V1_13_2("1.13.2", "stable_nodoc_47", false, true),
-    V1_13_1("1.13.1", "stable_nodoc_45", false, true),
-    V1_13("1.13", "stable_nodoc_43", false, true),
-    V1_12_2("1.12.2", "snapshot_nodoc_20171003", true, true),
-    V1_12("1.12", "snapshot_nodoc_20180814", false, true),
-    V1_11("1.11", "snapshot_nodoc_20170612", false, true),
-    V1_10_2("1.10.2", "snapshot_nodoc_20160703", false, true),
-    V1_9_4("1.9.4", "snapshot_nodoc_20160604", false, true),
-    V1_9("1.9", "snapshot_nodoc_20160516", false, true),
-    V1_8_8("1.8.8", "snapshot_nodoc_20151216", false, true),
-    V1_8("1.8", "snapshot_nodoc_20141130", false, true),
-    V1_7_10("1.7.10", "snapshot_nodoc_20140925", true, false);
+object MinecraftVersion {
+    var mcVersion: String = "1.18.1"
+    var mcpVersion: String? = null
+    var mcpConfig: Boolean = false
+    var spigot: Boolean = false
 
     fun generateMappings(): List<Pair<String, Mappings>> {
         // Mappings, fromObf
@@ -57,7 +29,7 @@ enum class MinecraftVersion(
             } else {
                 downloadSrgMappings(mcVersion)
             }
-            val srg2mcpMappings = downloadMcpMappings(obf2srgMappings, mcpVersion, mcVersion)
+            val srg2mcpMappings = downloadMcpMappings(obf2srgMappings, mcpVersion!!, mcVersion)
             val obf2mcp = Mappings.chain(ImmutableList.of(obf2srgMappings, srg2mcpMappings))
             mappings.add(Pair(obf2srgMappings, "srg"))
             mappings.add(Pair(obf2mcp, "mcp"))
@@ -85,7 +57,13 @@ enum class MinecraftVersion(
         return completeMappings
     }
 
-    fun write(mappingsFolder: File) {
+    @JvmStatic
+    fun write(mcVersion: String, mcpVersion: String?, mcpConfig: Boolean, spigot: Boolean, mappingsFolder: File) {
+        this.mcVersion = mcVersion
+        this.mcpVersion = mcpVersion
+        this.mcpConfig = mcpConfig
+        this.spigot = spigot
+
         val outputFolder = File(mappingsFolder, mcVersion)
         outputFolder.mkdirs()
 
@@ -126,7 +104,7 @@ enum class MinecraftVersion(
 
         // tiny
         println("$mcVersion: writing tiny mappings to $mcVersion.tiny")
-        val tinyMappings = tiny.Mappings()
+        val tinyMappings = io.jadon.minecraft_mappings.tiny.Mappings()
         generatedMappings.filter { it.first.startsWith("obf2") }.forEach { pair ->
             val name = pair.first.split("2")[1]
 

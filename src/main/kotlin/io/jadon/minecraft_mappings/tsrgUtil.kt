@@ -1,3 +1,5 @@
+package io.jadon.minecraft_mappings
+
 import java.io.File
 
 /**
