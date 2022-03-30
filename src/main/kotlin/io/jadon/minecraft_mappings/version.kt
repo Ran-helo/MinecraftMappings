@@ -36,7 +36,7 @@ object MinecraftVersion {
         }
         if (spigot) {
             val buildDataCommit = getBuildDataCommit(mcVersion)
-            val obf2spigotMappings = downloadSpigotMappings(buildDataCommit)
+            val obf2spigotMappings = downloadSpigotMappings(buildDataCommit, mcVersion)
             mappings.add(Pair(obf2spigotMappings, "spigot"))
         }
 

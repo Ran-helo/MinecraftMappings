@@ -33,6 +33,7 @@ dependencies {
     implementation "com.google.code.gson:gson:2.8.0"
     implementation "com.google.guava:guava:21.0"
     implementation "net.md-5:SpecialSource:1.8.5"
+    implementation 'org.eclipse.jgit:org.eclipse.jgit:5.13.0.202109080827-r'
 }
 
 shadowJar {

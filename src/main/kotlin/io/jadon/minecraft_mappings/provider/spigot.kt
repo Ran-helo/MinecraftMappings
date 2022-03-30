@@ -118,31 +118,12 @@ val brokenLines = setOf(
 
 fun stripBrokenLines(lines: List<String>) = lines.filter { it !in brokenLines && "<init>" !in it }
 
-fun downloadSpigotMappings(buildDataCommit: String): Mappings {
-    val baseUrl = "https://hub.spigotmc.org/stash/projects/SPIGOT/repos/builddata/browse/"
+fun downloadSpigotMappings(buildDataCommit: String, mcVersion: String): Mappings {
     val cacheDir = File("cache/spigot_$buildDataCommit")
-    val classMappingsFile = File(cacheDir, "classes.csrg")
-    val memberMappingsFile = File(cacheDir, "members.csrg")
-    if (!classMappingsFile.exists() || !memberMappingsFile.exists()) {
-        cacheDir.mkdirs()
-        val info = URL("$baseUrl/info.json?at=$buildDataCommit&raw").loadJson().asJsonObject
-        val classMappingsLocation = info.get("classMappings").asString
-        val memberMappings = info.get("memberMappings")
-        if (memberMappings != null) {
-            val memberMappingsLocation = memberMappings.asString
-            if (!memberMappingsFile.exists()) {
-                URL("$baseUrl/mappings/$memberMappingsLocation/?at=$buildDataCommit&raw").downloadTo(memberMappingsFile)
-            }
-        } else {
-            if (!memberMappingsFile.exists()) {
-                // TODO: Make this better
-                URL("https://maven.elmakers.com/repository/org/spigotmc/minecraft-server/" + info.get("spigotVersion").asString + "/minecraft-server-" + info.get("spigotVersion").asString + "-maps-spigot-members.csrg").downloadTo(memberMappingsFile)
-            }
-        }
-        if (!classMappingsFile.exists()) {
-            URL("$baseUrl/mappings/$classMappingsLocation/?at=$buildDataCommit&raw").downloadTo(classMappingsFile)
-        }
-    }
+
+    val classMappingsFile = io.github.ran.minecraft_mappings.SpigotMapper(File(cacheDir, "classes.csrg"), File(cacheDir, "members.csrg")).prepareMapping(mcVersion).classMappingsFile
+    val memberMappingsFile = io.github.ran.minecraft_mappings.SpigotMapper(File(cacheDir, "classes.csrg"), File(cacheDir, "members.csrg")).prepareMapping(mcVersion).memberMappingsFile
+
     val classMappings = MappingsFormat.COMPACT_SEARGE_FORMAT.parseLines(stripBrokenLines(classMappingsFile.readLines()))
     val memberMappings =
         MappingsFormat.COMPACT_SEARGE_FORMAT.parseLines(stripBrokenLines(memberMappingsFile.readLines()))
