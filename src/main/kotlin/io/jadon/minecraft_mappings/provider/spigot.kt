@@ -120,6 +120,7 @@ fun stripBrokenLines(lines: List<String>) = lines.filter { it !in brokenLines &&
 
 fun downloadSpigotMappings(buildDataCommit: String, mcVersion: String): Mappings {
     val cacheDir = File("cache/spigot_$buildDataCommit")
+    if (!cacheDir.exists()) cacheDir.mkdirs()
 
     val classMappingsFile = io.github.ran.minecraft_mappings.SpigotMapper(File(cacheDir, "classes.csrg"), File(cacheDir, "members.csrg")).prepareMapping(mcVersion).classMappingsFile
     val memberMappingsFile = io.github.ran.minecraft_mappings.SpigotMapper(File(cacheDir, "classes.csrg"), File(cacheDir, "members.csrg")).prepareMapping(mcVersion).memberMappingsFile
