@@ -41,9 +41,7 @@ public class SpigotMapper {
 
     public SpigotMapper prepareMapping(String mcVersion) throws IOException, GitAPIException {
         if (mappingFile.exists()) {
-            if (!mappingFile.isDirectory()) {
-                return this;
-            }
+            if (mappingFile.isFile()) return this;
             mappingFile.delete();
         }
         System.out.println("Preparing mappings...");
@@ -84,9 +82,8 @@ public class SpigotMapper {
             mapUtil.makeFieldMaps(new String(outputStream.toByteArray()), mappingFile, true);
         } else {
             mappingFile.createNewFile();
-            Files.copy(classMappings.toPath(), clazzMappingFile.toPath());
-            Files.copy(new File(buildDataDir, "mappings/" + versionInfo.memberMappings).toPath(), mappingFile.toPath());
         }
+        Files.copy(classMappings.toPath(), clazzMappingFile.toPath());
         System.out.println("Successfully fetched spigot mappings!");
         return this;
     }
