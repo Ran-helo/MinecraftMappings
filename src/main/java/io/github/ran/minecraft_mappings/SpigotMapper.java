@@ -138,7 +138,7 @@ public class SpigotMapper {
             return hashFromUrl(mappingsUrl);
         }
 
-        private final Pattern URL_PATTERN = Pattern.compile("https://launcher.mojang.com/v1/objects/([0-9a-f]{40})/.*");
+        private transient final Pattern URL_PATTERN = Pattern.compile("https://launcher.mojang.com/v1/objects/([0-9a-f]{40})/.*");
 
         public String hashFromUrl(String url) {
             if (url == null) {
