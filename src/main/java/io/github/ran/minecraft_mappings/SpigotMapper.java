@@ -81,7 +81,6 @@ public class SpigotMapper {
             }
             mapUtil.makeFieldMaps(new String(outputStream.toByteArray()), mappingFile, true);
         } else {
-            mappingFile.createNewFile();
             Files.copy(new File(buildDataDir, "mappings/" + versionInfo.memberMappings).toPath(), mappingFile.toPath());
         }
         Files.copy(classMappings.toPath(), clazzMappingFile.toPath());
