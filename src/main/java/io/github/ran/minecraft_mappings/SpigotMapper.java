@@ -83,6 +83,7 @@ public class SpigotMapper {
         } else {
             Files.copy(new File(buildDataDir, "mappings/" + versionInfo.memberMappings).toPath(), mappingFile.toPath());
         }
+        if (clazzMappingFile.exists()) clazzMappingFile.delete();
         Files.copy(classMappings.toPath(), clazzMappingFile.toPath());
         System.out.println("Successfully fetched spigot mappings!");
         return this;

@@ -101,6 +101,10 @@ fun getBuildDataCommit(spigotVersion: String): String {
         val buildDataCommit = json.getAsJsonObject("refs").get("BuildData").asString
         // Store it in the cache
         cacheInfo.buildDataCommits[spigotVersion] = buildDataCommit
+        if (!cacheFile.exists()) {
+            cacheFile.parentFile.mkdirs()
+            cacheFile.createNewFile()
+        }
         cacheInfo.saveTo(cacheFile)
         buildDataCommit
     }
